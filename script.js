@@ -22,7 +22,20 @@ const gameBoard = (function(){
     console.log(arrayValues)
   }
 
-  return {getBoard, printBoard}
+  const populateBoard = (row, col, mark) => {
+      board[row][col].addMark(mark);
+  }
+  
+  const isCellPopulated = (row, col) => {
+    if (board[row][col].getValue() === 0) {
+      return true;
+    } else{
+      return false
+    }
+  }
+  
+
+  return {isCellPopulated, getBoard, printBoard, populateBoard}
 })()
 
 function PlayerMark(){
@@ -62,10 +75,29 @@ const gameController = (function(){
     }else{
       activePlayer = players[0]
     }
-    console.log(activePlayer)
   }
 
-  return { switchPlayerTurn }
+  const getActivePlayer = () => activePlayer;
+
+  const playRound = (row,col) => {
+    // console.log(activePlayer)
+    // console.log(getActivePlayer().mark)
+    if (board.isCellPopulated(row, col)) {
+      board.populateBoard(row, col, getActivePlayer().mark);
+      switchPlayerTurn();                                  
+      printNewRound();                                   
+    }else{
+      console.log("Choose another cell")
+    }
+  }
+
+  const printNewRound = () => {
+    board.printBoard()
+    console.log(`Now is ${getActivePlayer().name}'s turn`)
+  }
+  printNewRound()
+
+  return { playRound, switchPlayerTurn }
 })()
 
 function checkWinCondition(board) {
