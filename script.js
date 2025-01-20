@@ -22,6 +22,11 @@ const gameBoard = (function(){
     console.log(arrayValues)
   }
 
+  const getBoardState = () => {
+    const arrayValues = board.map((row) => row.map((cell)=>cell.getValue()))
+    return arrayValues
+  }
+
   const populateBoard = (row, col, mark) => {
       board[row][col].addMark(mark);
   }
@@ -35,7 +40,7 @@ const gameBoard = (function(){
   }
   
 
-  return {isCellPopulated, getBoard, printBoard, populateBoard}
+  return {isCellPopulated, getBoard, printBoard, populateBoard, getBoardState}
 })()
 
 function PlayerMark(){
@@ -78,14 +83,21 @@ const gameController = (function(){
   }
 
   const getActivePlayer = () => activePlayer;
-
   const playRound = (row,col) => {
     // console.log(activePlayer)
     // console.log(getActivePlayer().mark)
+    // console.log(checkWinCondition(board.getBoard()))
     if (board.isCellPopulated(row, col)) {
-      board.populateBoard(row, col, getActivePlayer().mark);
-      switchPlayerTurn();                                  
-      printNewRound();                                   
+      board.populateBoard(row, col, getActivePlayer().mark) ;
+      let winBoard = board.getBoardState()
+      if(!checkWinCondition(winBoard)){
+        switchPlayerTurn();                                  
+        printNewRound();                                   
+      }else{
+        console.log(`Game End, ${getActivePlayer().name} won!`)
+      }
+
+      // console.log(checkWinCondition(status))
     }else{
       console.log("Choose another cell")
     }
@@ -100,12 +112,16 @@ const gameController = (function(){
   return { playRound, switchPlayerTurn }
 })()
 
+
 function checkWinCondition(board) {
+  const checkZero = (value) => value === 0;
+
   const checkRow = function(board){
     for (let row = 0; row < board.length; row++) {
       let isEqual = true;
       //Set the first value of the row to compare with
       value = board[row][0];
+      if(checkZero(value)) continue;
       for (let col = 0; col < board.length; col++) {
         if(value !== board[row][col]){
           isEqual = false;
@@ -113,6 +129,7 @@ function checkWinCondition(board) {
           break
         }
       }
+      // console.log(isZero)
       if(isEqual){
         // console.log("FOUND EQUAL ROW")
         return true;
@@ -126,7 +143,7 @@ function checkWinCondition(board) {
       let isEqual = true;
       //Set first value of the column to compare with
       let value = board[0][col];
-
+      if(checkZero(value)) continue;
       for (let row = 0; row <board.length; row++) {
         if(value !== board[row][col]){
           isEqual = false;
@@ -146,52 +163,55 @@ function checkWinCondition(board) {
 
   const checkDiag = function(board){
     const value = board[1][1]
-    let isEqual = true
+    if(checkZero(value)) return false;
+  
+    let isMainDiagEqual = true;
+    let isAntiDiagEqual = true;
+
     //Main diagonal (0.0, 1.1, 2.2)
-    function checkMainDiag(board){
-      for (let row = 0; row < board.length; row++) {
-        if(value !== board[row][row]){
-          isEqual = false
-          break
-        }
+    for (let row = 0; row < board.length; row++) {
+      if(value !== board[row][row]){
+        isMainDiagEqual = false
+        break
       }
-      return isEqual
     }
 
     //Anti diagonal (0.2, 1.1, 2.0)
-    function checkAntiDiag(board){
-      for (let row = 0; row < board.length; row++) {
-        if(value !== board[row][board.length - 1 - row]){
-          isEqual = false
-          break
-        }
-        
+    for (let row = 0; row < board.length; row++) {
+      if(value !== board[row][board.length - 1 - row]){
+        isAntiDiagEqual = false
+        break
       }
-      return isEqual
     }
+        
+    // return !hasZero && (isMainDiagEqual || isAntiDiagEqual);
+    return (isMainDiagEqual || isAntiDiagEqual);
 
-    if(checkAntiDiag(board)){
-      return true;
-    }
-    if(checkMainDiag(board)){
-      return true;
-    }
+  };
 
+  const rowWin = checkRow(board);
+  const colWin = checkCol(board);
+  const diagWin = checkDiag(board);
+
+  if (rowWin) {
+    console.log("Row");
+  } else if (colWin) {
+    console.log("Col");
+  } else if (diagWin) {
+    console.log("Diag");
+  } else {
+    console.log("Draw");
   }
-
-
-  // if(checkRow(board)){
-  //   return true
-  // }
-
-  if(checkRow(board)){
-    console.log("Row Win")
-  }else if(checkCol(board)){
-    console.log("Col Win")
-  }else if(checkDiag(board)){
-    console.log("Diag Win")
-  }else{
-    console.log("Draw")
-  }
+  
+  return rowWin || colWin || diagWin;
 
 }
+    // function checkZero(num){
+    //   zeros.push(num)
+    //   const allEqual = zeros.every(cell => cell === 0)
+    //   // console.log(allEqual)
+    // }
+      // zeros.push(board[row][board.length - 1 - row])
+      // if (zeros.includes(0)) {
+      //   hasZero = true;
+      // }
