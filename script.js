@@ -6,6 +6,7 @@ const gameBoard = (function(){
   for (let i = 0; i < size; i++) {
     board[i] = [];
     for (let j = 0; j < size; j++) {
+      //Populate each cell with the PlayerMark object
       board[i].push(PlayerMark());
     }
   }
@@ -13,6 +14,9 @@ const gameBoard = (function(){
   const getBoard = () => board;
 
   // console.log(result)
+  // Iterates over the array's rows which are the board[0/1/2] with .map
+  // Then continue iterating with the nested array
+  // At the innermost cell, get access to the getValue function from PlayerMark object
   const printBoard = () => {
     const arrayValues = board.map((row) => row.map((cell)=>cell.getValue()))
     console.log(arrayValues)
@@ -32,6 +36,37 @@ function PlayerMark(){
 
   return { addMark, getValue }
 }
+
+const gameController = (function(){
+  playerOneName = "Player One";
+  playerTwoName = "Player Two";
+
+  const board = gameBoard;
+
+  const players = [
+    {
+      name : playerOneName,
+      mark : "X"
+    },
+    {
+      name : playerTwoName,
+      mark : "Y"
+    }
+  ]
+
+  let activePlayer =  players[0];
+
+  const switchPlayerTurn = () => {
+    if (activePlayer === players[0]) {
+      activePlayer = players[1]
+    }else{
+      activePlayer = players[0]
+    }
+    console.log(activePlayer)
+  }
+
+  return { switchPlayerTurn }
+})()
 
 function checkWinCondition(board) {
   const checkRow = function(board){
