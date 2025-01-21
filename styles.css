@@ -1,5 +1,62 @@
+:root{
+  /* --size: 5; */
+  --height:calc(var(--size)*20vw);
+  --width:calc(var(--size)*20vw)
+}
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body{
+  background:black;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height:100vh;
+}
+
+h1{
+  color:white;
+}
+
+:root{
+  --size: 3;
+  --max-width: 40vw; /* Set a maximum width for the grid container */
+  --max-height: 40vw; /* Set a maximum height for the grid container */
+  --width: calc(min(var(--size) * 20vw, var(--max-width)));
+  --height: calc(min(var(--size) * 20vw, var(--max-height)));
+}
+
+#main{
+  width:var(--width);
+  height:var(--height);
+  display: grid;
+  grid-template-columns: repeat(var(--size), calc(var(--width)/var(--size)));
+  /* grid-template-columns: repeat(var(--size), max(200px,calc(var(--width)/var(--size)))); */
+  grid-template-rows: repeat(var(--size), calc(var(--height)/var(--size)));
+  /* grid-template-rows: repeat(var(--size), max(200px,calc(var(--height)/var(--size)))); */
+  gap:10px;
+}
+
+
+.item {
+  background-color: rgb(227, 0, 0);
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.item-1, .item-5, .item-9{
+  background-image: url("./images/O.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 85%;
+}
+.item-2, .item-6, .item-7{
+  background-image: url("./images/X.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 85%;
 }

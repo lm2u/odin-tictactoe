@@ -215,3 +215,28 @@ function checkWinCondition(board) {
       // if (zeros.includes(0)) {
       //   hasZero = true;
       // }
+
+const boardDOM = (function() {
+  //Pass input to rendererGrid(input)
+  //Access the --size property in css and change value to input's.
+  //do for loop using the new --size property.
+  const main = document.getElementById("main")
+  const root = document.documentElement;
+
+  const renderGrid = (input) => {
+    size = input*input;
+    for (let i = 0; i < size; i++) {
+      const item = document.createElement("item")
+      item.classList.add(`item`)
+      item.classList.add(`item-${i + 1}`)
+    
+      main.appendChild(item)
+    }
+    root.style.setProperty('--size', `${input}`)
+  }
+
+  return { renderGrid }
+})()
+
+boardDOM.renderGrid(3)
+
