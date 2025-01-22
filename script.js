@@ -13,19 +13,14 @@ const gameBoard = (function(){
 
   const getBoard = () => board;
 
-  // console.log(result)
   // Iterates over the array's rows which are the board[0/1/2] with .map
   // Then continue iterating with the nested array
   // At the innermost cell, get access to the getValue function from PlayerMark object
   const printBoard = () => {
     const arrayValues = board.map((row) => row.map((cell)=>cell.getValue()))
-    console.log(arrayValues)
-  }
-
-  const getBoardState = () => {
-    const arrayValues = board.map((row) => row.map((cell)=>cell.getValue()))
     return arrayValues
   }
+
 
   const populateBoard = (row, col, mark) => {
       board[row][col].addMark(mark);
@@ -33,14 +28,14 @@ const gameBoard = (function(){
   
   const isCellPopulated = (row, col) => {
     if (board[row][col].getValue() === 0) {
-      return true;
+      return false;
     } else{
-      return false
+      return true
     }
   }
   
 
-  return {isCellPopulated, getBoard, printBoard, populateBoard, getBoardState}
+  return {isCellPopulated, getBoard, printBoard, populateBoard}
 })()
 
 function PlayerMark(){
@@ -84,32 +79,34 @@ const gameController = (function(){
 
   const getActivePlayer = () => activePlayer;
   const playRound = (row,col) => {
+    // console.log("test", row,col);
     // console.log(activePlayer)
     // console.log(getActivePlayer().mark)
     // console.log(checkWinCondition(board.getBoard()))
-    if (board.isCellPopulated(row, col)) {
-      board.populateBoard(row, col, getActivePlayer().mark) ;
-      let winBoard = board.getBoardState()
-      if(!checkWinCondition(winBoard)){
-        switchPlayerTurn();                                  
-        printNewRound();                                   
-      }else{
-        console.log(`Game End, ${getActivePlayer().name} won!`)
-      }
-
-      // console.log(checkWinCondition(status))
-    }else{
+    if (board.isCellPopulated(row,col)) {
       console.log("Choose another cell")
+      return;
     }
+
+    board.populateBoard(row, col, getActivePlayer().mark) ;
+
+    const winBoard = board.printBoard()
+    if(checkWinCondition(winBoard)){
+      console.log(`Game End, ${getActivePlayer().name} won!`)
+      return true
+    }
+
+    printNewRound();
+    return null;
   }
 
   const printNewRound = () => {
     board.printBoard()
     console.log(`Now is ${getActivePlayer().name}'s turn`)
   }
-  printNewRound()
+  // printNewRound()
 
-  return { playRound, switchPlayerTurn }
+  return { playRound, switchPlayerTurn, getActivePlayer, getBoard: board.getBoard }
 })()
 
 
@@ -206,37 +203,52 @@ function checkWinCondition(board) {
   return rowWin || colWin || diagWin;
 
 }
-    // function checkZero(num){
-    //   zeros.push(num)
-    //   const allEqual = zeros.every(cell => cell === 0)
-    //   // console.log(allEqual)
-    // }
-      // zeros.push(board[row][board.length - 1 - row])
-      // if (zeros.includes(0)) {
-      //   hasZero = true;
-      // }
 
-const boardDOM = (function() {
-  //Pass input to rendererGrid(input)
-  //Access the --size property in css and change value to input's.
-  //do for loop using the new --size property.
+
+function screenController(){
+  const game = gameController;
   const main = document.getElementById("main")
   const root = document.documentElement;
+  const board = game.getBoard();
 
-  const renderGrid = (input) => {
-    size = input*input;
-    for (let i = 0; i < size; i++) {
-      const item = document.createElement("item")
-      item.classList.add(`item`)
-      item.classList.add(`item-${i + 1}`)
-    
-      main.appendChild(item)
+  function clickHandlerBoard(e) {
+    const gameState = game.playRound(e.target.dataset.row, e.target.dataset.column);
+    updateScreen(e);
+
+    if (gameState === true) {
+      console.log(`${game.getActivePlayer().name} has won the game!`);
+      return; // Stop further execution if the game has ended
     }
-    root.style.setProperty('--size', `${input}`)
+  
+    if (gameState === null) {
+      // Switch to the next player only if the move was valid and the game continues
+      game.switchPlayerTurn();
+    }
   }
+  
+  function updateScreen(e){
 
-  return { renderGrid }
-})()
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board.length; j++) {
+        const item = document.createElement("div");
+        item.classList.add("item");
+        item.dataset.column = j;
+        item.dataset.row = i;
+        main.appendChild(item)
+      }
+    }
 
-boardDOM.renderGrid(3)
+    if (game.getActivePlayer().mark === "X") {
+      e.target.style.background = "lime";
+    }else{
+      e.target.style.background = "white";
+    }
+    // console.log(e)
+  };
 
+  main.addEventListener("click", clickHandlerBoard);
+  updateScreen()
+
+}
+
+screenController()
