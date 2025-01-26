@@ -100,6 +100,7 @@ const GameController = (function(){
       return true
     }
 
+    switchPlayerTurn();
     printNewRound()
 
     return null
@@ -123,10 +124,32 @@ function ScreenController(){
 
   //Generate fixed grid board based on length of board
   //Add the corresponding properties for locating and styles
-  function updatePlayerTurn(isEnd){
+  function updatePlayerTurnDisplay(isEnd){
     playerTurn.textContent = `${game.getActivePlayer().name}'s turn`;
     if (isEnd) {
       playerTurn.textContent =`${game.getActivePlayer().name} has won the game!` ;
+    }
+  }
+
+  //Check if element is not yet clicked, then change background to hover image
+  function hoverIn(e){
+    const mark = game.getActivePlayer().mark;
+    const emptyCell = GameBoard.isCellPopulated(e.target.dataset.row, e.target.dataset.col)
+    if (!emptyCell) {
+      if (mark === "X") {
+        e.target.style.backgroundImage = "url('./images/X.svg')";
+      }else{
+        e.target.style.backgroundImage = "url('./images/O.svg')";
+      }
+    }
+  }
+
+  //Upon leaving the element, remove the hover's image, unless it's clicked.
+  function hoverOut(e){
+    const emptyCell = GameBoard.isCellPopulated(e.target.dataset.row, e.target.dataset.col)
+    console.log("hover OUT div: ", e.target)
+    if (!emptyCell) {
+      e.target.style.removeProperty("background-image");
     }
   }
 
@@ -176,13 +199,14 @@ function ScreenController(){
     }
     
     if(gameState === null){
-      game.switchPlayerTurn();
-      updatePlayerTurn();
+      updatePlayerTurnDisplay();
     }
   }
 
+  main.addEventListener("mouseover", hoverIn)
+  main.addEventListener("mouseout", hoverOut)
   main.addEventListener("click", clickHandlerBoard)
-  updatePlayerTurn();
+  updatePlayerTurnDisplay();
   generateBoardGrid()
 }
 
