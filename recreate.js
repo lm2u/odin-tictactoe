@@ -53,7 +53,16 @@ const GameBoard = (function(){
     return board[row][col].getValue() !== 0 
   }
 
-  return {getBoard, printBoard, populateBoard, isCellPopulated}
+  // If all is string means it's draw since all values the marks or "string"
+  const isString = (value) => typeof value === "string";
+  const isDraw = () =>{
+    let temp = []
+    const arrayValues = printBoard()
+    arrayValues.forEach(row => row.forEach(col=> temp.push(col)))
+    return temp.every(isString);
+  }
+
+  return {getBoard, printBoard, populateBoard, isCellPopulated, isDraw}
 })()
 
 const board = GameBoard;
@@ -126,8 +135,11 @@ function ScreenController(){
   //Add the corresponding properties for locating and styles
   function updatePlayerTurnDisplay(isEnd){
     playerTurn.textContent = `${game.getActivePlayer().name}'s turn`;
+    if (GameBoard.isDraw()){
+      playerTurn.textContent =`DRAW` ;
+    }
     if (isEnd) {
-      playerTurn.textContent =`${game.getActivePlayer().name} has won the game!` ;
+      playerTurn.textContent =`${game.getActivePlayer().name} has WON the game!` ;
     }
   }
 
@@ -137,9 +149,9 @@ function ScreenController(){
     const emptyCell = GameBoard.isCellPopulated(e.target.dataset.row, e.target.dataset.col)
     if (!emptyCell) {
       if (mark === "X") {
-        e.target.style.backgroundImage = "url('./images/X.svg')";
+        e.target.style.backgroundImage = "url('./images/X-hover.svg')";
       }else{
-        e.target.style.backgroundImage = "url('./images/O.svg')";
+        e.target.style.backgroundImage = "url('./images/O-hover.svg')";
       }
     }
   }
@@ -158,9 +170,9 @@ function ScreenController(){
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board.length; col++) {
         const item = document.createElement("div")
-        item.classList.add("item")
-        item.dataset.row = row
-        item.dataset.col = col
+        item.classList.add("item");
+        item.dataset.row = row;
+        item.dataset.col = col;
         main.appendChild(item)
       }
     }
@@ -193,7 +205,7 @@ function ScreenController(){
     if(gameState === true){
       console.log("Game End")
       console.log(`${game.getActivePlayer().name} Won!`)
-      updatePlayerTurn(gameState);
+      updatePlayerTurnDisplay(gameState);
       main.removeEventListener("click", clickHandlerBoard)
       return
     }
