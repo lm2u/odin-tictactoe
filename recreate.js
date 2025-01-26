@@ -105,19 +105,19 @@ const GameController = (function(){
     //See if win condition has been achieved then log msg
     board.populateBoard(row, col, getActivePlayer().mark)
     if (checkWinCondition(board.printBoard())) {
-      console.log(`Game end! The winner is ${getActivePlayer().name}`)
+      console.log(`Game end! The winner is ${getActivePlayer().name}`);
       return true
     }
 
     switchPlayerTurn();
-    printNewRound()
+    printNewRound();
 
     return null
   }
 
   const printNewRound = () => {
-    board.printBoard()
-    console.log(`Switching Turns. Now is ${getActivePlayer().name}'s turn`)
+    board.printBoard();
+    console.log(`Switching Turns. Now is ${getActivePlayer().name}'s turn`);
   }
 
   return {switchPlayerTurn, getActivePlayer, playRound, printNewRound}
@@ -128,7 +128,7 @@ function ScreenController(){
   const game = GameController;
   const board = GameBoard.getBoard();
   const main = document.getElementById("main");
-  const playerTurn = document.getElementById("playerTurn")
+  const playerTurn = document.getElementById("playerTurn");
   console.log(main)
 
   //Generate fixed grid board based on length of board
@@ -145,6 +145,10 @@ function ScreenController(){
 
   //Check if element is not yet clicked, then change background to hover image
   function hoverIn(e){
+    if (e.target.classList.value!=="item") {
+      return;
+    }
+
     const mark = game.getActivePlayer().mark;
     const emptyCell = GameBoard.isCellPopulated(e.target.dataset.row, e.target.dataset.col)
     if (!emptyCell) {
@@ -158,6 +162,10 @@ function ScreenController(){
 
   //Upon leaving the element, remove the hover's image, unless it's clicked.
   function hoverOut(e){
+    if (e.target.classList.value!=="item") {
+      return;
+    }
+
     const emptyCell = GameBoard.isCellPopulated(e.target.dataset.row, e.target.dataset.col)
     console.log("hover OUT div: ", e.target)
     if (!emptyCell) {
@@ -173,7 +181,7 @@ function ScreenController(){
         item.classList.add("item");
         item.dataset.row = row;
         item.dataset.col = col;
-        main.appendChild(item)
+        main.appendChild(item);
       }
     }
   }
@@ -192,6 +200,9 @@ function ScreenController(){
   //Then pass it on as parameters
   //After every click, update the style of the clicked element
   function clickHandlerBoard(e){
+    if (e.target.classList.value!=="item") {
+      return;
+    }
     const row = e.target.dataset.row;
     const col = e.target.dataset.col;
 
@@ -215,11 +226,11 @@ function ScreenController(){
     }
   }
 
-  main.addEventListener("mouseover", hoverIn)
-  main.addEventListener("mouseout", hoverOut)
-  main.addEventListener("click", clickHandlerBoard)
+  main.addEventListener("mouseover", hoverIn);
+  main.addEventListener("mouseout", hoverOut);
+  main.addEventListener("click", clickHandlerBoard);
   updatePlayerTurnDisplay();
-  generateBoardGrid()
+  generateBoardGrid();
 }
 
-ScreenController()
+ScreenController();
