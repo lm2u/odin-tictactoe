@@ -117,11 +117,20 @@ const GameController = (function(){
 function ScreenController(){
   const game = GameController;
   const board = GameBoard.getBoard();
-  const main = document.getElementById("main")
+  const main = document.getElementById("main");
+  const playerTurn = document.getElementById("playerTurn")
   console.log(main)
 
   //Generate fixed grid board based on length of board
   //Add the corresponding properties for locating and styles
+  function updatePlayerTurn(isEnd){
+    playerTurn.textContent = `${game.getActivePlayer().name}'s turn`;
+    if (isEnd) {
+      playerTurn.textContent =`${game.getActivePlayer().name} has won the game!` ;
+    }
+  }
+
+
   function generateBoardGrid(){
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board.length; col++) {
@@ -137,9 +146,9 @@ function ScreenController(){
   //Update the style of the clicked element
   function updateElement(e){
     if(game.getActivePlayer().mark === "X"){
-      e.target.style.backgroundColor = "lime";
+      e.target.style.backgroundImage = "url('./images/X.svg')";
     }else{
-      e.target.style.backgroundColor = "white";
+      e.target.style.backgroundImage = "url('./images/O.svg')";
     }
   }
 
@@ -148,21 +157,32 @@ function ScreenController(){
   //Then pass it on as parameters
   //After every click, update the style of the clicked element
   function clickHandlerBoard(e){
-    const gameState = game.playRound(e.target.dataset.row, e.target.dataset.col)
-    updateElement(e);
+    const row = e.target.dataset.row;
+    const col = e.target.dataset.col;
 
+    //Prevent player from clicking same element twice.
+    if (!GameBoard.isCellPopulated(row,col)) {
+      updateElement(e);
+    }
+    
+    const gameState = game.playRound(row,col)
+    
     if(gameState === true){
       console.log("Game End")
       console.log(`${game.getActivePlayer().name} Won!`)
+      updatePlayerTurn(gameState);
+      main.removeEventListener("click", clickHandlerBoard)
       return
     }
-
+    
     if(gameState === null){
       game.switchPlayerTurn();
+      updatePlayerTurn();
     }
   }
 
   main.addEventListener("click", clickHandlerBoard)
+  updatePlayerTurn();
   generateBoardGrid()
 }
 

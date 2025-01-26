@@ -41,21 +41,15 @@ h1{
   gap:10px;
 }
 
+#playerTurn{
+  color:white;
+  font-size: 2rem;
+}
 
 .item {
   background-color: rgb(227, 0, 0);
   border: 1px solid black;
   border-radius: 5px;
-}
-
-.item-1, .item-5, .item-9{
-  background-image: url("./images/O.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 85%;
-}
-.item-2, .item-6, .item-7{
-  background-image: url("./images/X.svg");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 85%;
